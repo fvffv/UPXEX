@@ -1,0 +1,257 @@
+# Copyright (C) Markus Franz Xaver Johannes Oberhumer
+# CC CompilationCheck: test llvm-mingw
+
+# see https://github.com/mstorsjo/llvm-mingw
+
+name: 'llvm-mingw'
+on:
+  workflow_dispatch:
+defaults: { run: { shell: bash } }
+env:
+  CMAKE_REQUIRED_QUIET: 'OFF'
+  CMAKE_VERBOSE_MAKEFILE: 'ON'
+  CTEST_OUTPUT_ON_FAILURE: 'ON'
+  DEBIAN_FRONTEND: noninteractive
+  NO_COLOR: 1
+  UPX_CMAKE_BUILD_FLAGS: --verbose
+  UPX_CMAKE_CONFIG_FLAGS: -Wdev --warn-uninitialized
+  #UPX_CONFIG_DISABLE_RELEASE_O2: 'ON'
+  UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UPX: '$$<$$<CONFIG:Release>:-fomit-frame-pointer>'
+  UPX_CONFIG_HAVE_WORKING_BUILD_RPATH: 'ON'
+  #UPX_DEBUG_DOCTEST_DISABLE: 1
+  UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
+  UPX_DEBUG_TEST_LIBC_QSORT: 1
+  ZSTD_CLEVEL: 17
+
+jobs:
+  job-llvm-mingw: # uses cmake + make
+    if: github.repository_owner == 'upx'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: llvm-mingw-20230614-msvcrt
+            llvm_version: 16.0.6
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20230614/llvm-mingw-20230614-msvcrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20230614-ucrt
+            llvm_version: 16.0.6
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20230614/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20231128-msvcrt
+            llvm_version: 17.0.6
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20231128/llvm-mingw-20231128-msvcrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20231128-ucrt
+            llvm_version: 17.0.6
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20231128/llvm-mingw-20231128-ucrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20240619-msvcrt
+            llvm_version: 18.1.8
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20240619-ucrt
+            llvm_version: 18.1.8
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20250114-msvcrt
+            llvm_version: 19.1.7
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20250114/llvm-mingw-20250114-msvcrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20250114-ucrt
+            llvm_version: 19.1.7
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20250114/llvm-mingw-20250114-ucrt-ubuntu-20.04-x86_64.tar.xz'
+          - name: llvm-mingw-20250709-msvcrt
+            llvm_version: 20.1.8
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20250709/llvm-mingw-20250709-msvcrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20250709-ucrt
+            llvm_version: 20.1.8
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20250709/llvm-mingw-20250709-ucrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20251216-msvcrt
+            llvm_version: 21.1.8
+            use_arm64ec: true
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-msvcrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20251216-ucrt
+            llvm_version: 21.1.8
+            use_arm64ec: true
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20260616-msvcrt
+            llvm_version: 22.1.8
+            use_arm64ec: true
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20260616/llvm-mingw-20260616-msvcrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20260616-ucrt
+            llvm_version: 22.1.8
+            use_arm64ec: true
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20260616/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20260728-msvcrt
+            llvm_version: 23.1.0rc2
+            use_arm64ec: true
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20260728/llvm-mingw-20260728-msvcrt-ubuntu-22.04-x86_64.tar.xz'
+          - name: llvm-mingw-20260728-ucrt
+            llvm_version: 23.1.0rc2
+            use_arm64ec: true
+            url: 'https://github.com/mstorsjo/llvm-mingw/releases/download/20260728/llvm-mingw-20260728-ucrt-ubuntu-22.04-x86_64.tar.xz'
+
+    env:
+      container: 'ubuntu:26.04'
+      CMAKE_SYSTEM_NAME: Windows
+      UPX_CONFIG_DISABLE_CXX_STANDARD: 'ON'
+      cxxflags: -std=gnu++2b
+      xflags: -D_WIN32_WINNT=0x0601
+      #xflags: -D_WIN32_WINNT=0x0601 -DDOCTEST_CONFIG_DISABLE
+
+    name: ${{ format('{0} {1}', matrix.name, matrix.llvm_version) }}
+    runs-on: ubuntu-latest
+    #container: ${{ env.container }}
+    container: 'ubuntu:26.04'
+    steps:
+      - run: uname -a; pwd; id; umask
+      - run: ulimit -a || true
+      - name: ${{ format('Install packages {0}', env.container) }}
+        run: |
+          dpkg --add-architecture i386
+          apt-get update && apt-get upgrade -y
+          apt-get install -y --no-install-recommends bash ca-certificates cmake curl file git make ninja-build parallel strace tar time tree util-linux xz-utils zstd
+      - run: dpkg -l
+      - name: ${{ format('Check out {0} source code', github.ref_name) }}
+        run: |
+          git config --global --add safe.directory '*' # needed when running in a container
+          git clone --branch "$GITHUB_REF_NAME" --depth 1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" .
+          git submodule update --init
+      - name: Check out test suite
+        run: git clone --depth=1 https://github.com/upx/upx-testsuite ../deps/upx-testsuite
+
+      - name: ${{ format('Install {0} {1}', matrix.name, matrix.llvm_version) }}
+        run: |
+          mkdir -p -v ~/.local/bin
+          cd ~/.local/bin
+          curl -sS -L -O '${{ matrix.url }}'
+          ls -ldF ./llvm-mingw*.tar.*
+          tar -xoaf ./llvm-mingw*.tar.*
+          rm ./llvm-mingw*.tar.*
+          # update PATH
+          cd ./llvm-mingw*/bin
+          echo "PATH=$PWD:$PATH" >> $GITHUB_ENV
+          echo "$PWD"; ls -laF
+
+      - run: ls -laF "$HOME" "$GITHUB_WORKSPACE" || true
+      - run: set -x; cat "$HOME/.gitconfig" || true
+      - run: cd ~/.local/bin/llvm-mingw*/. && echo "$PWD" && ls -laF
+      - run: cd ~/.local/bin/llvm-mingw*/. && echo "$PWD" && tree -sF -d --du
+      # run: cd ~/.local/bin/llvm-mingw*/. && echo "$PWD" && tree -sF    --du
+
+      - name: 'Build clang aarch64'
+        run: |
+          export CC="aarch64-w64-mingw32-clang $xflags" CXX="aarch64-w64-mingw32-clang++ $xflags $cxxflags"
+          make UPX_XTARGET=llvm-mingw/aarch64-w64-mingw32-clang xtarget/all
+      - name: 'Build clang aarch64 static'
+        run: |
+          export CC="aarch64-w64-mingw32-clang -static $xflags" CXX="aarch64-w64-mingw32-clang++ -static $xflags $cxxflags"
+          make UPX_XTARGET=llvm-mingw/aarch64-w64-mingw32-clang-static xtarget/all
+
+      - name: 'Build clang arm64ec'
+        if: ${{ matrix.use_arm64ec }}
+        run: |
+          export CC="arm64ec-w64-mingw32-clang $xflags" CXX="arm64ec-w64-mingw32-clang++ $xflags $cxxflags"
+          export UPX_CONFIG_DISABLE_SAVE_TEMPS=ON
+          make UPX_XTARGET=llvm-mingw/arm64ec-w64-mingw32-clang xtarget/all || true
+      - name: 'Build clang arm64ec static'
+        if: ${{ matrix.use_arm64ec }}
+        run: |
+          export CC="arm64ec-w64-mingw32-clang -static $xflags" CXX="arm64ec-w64-mingw32-clang++ -static $xflags $cxxflags"
+          export UPX_CONFIG_DISABLE_SAVE_TEMPS=ON
+          make UPX_XTARGET=llvm-mingw/arm64ec-w64-mingw32-clang-static xtarget/all || true
+
+      - name: 'Build clang armv7'
+        run: |
+          export CC="armv7-w64-mingw32-clang $xflags" CXX="armv7-w64-mingw32-clang++ $xflags $cxxflags"
+          make UPX_XTARGET=llvm-mingw/armv7-w64-mingw32-clang xtarget/all
+      - name: 'Build clang armv7 static'
+        run: |
+          export CC="armv7-w64-mingw32-clang -static $xflags" CXX="armv7-w64-mingw32-clang++ -static $xflags $cxxflags"
+          make UPX_XTARGET=llvm-mingw/armv7-w64-mingw32-clang-static xtarget/all
+
+      - name: 'Build clang i686'
+        run: |
+          export CC="i686-w64-mingw32-clang $xflags" CXX="i686-w64-mingw32-clang++ $xflags $cxxflags"
+          export CMAKE_CROSSCOMPILING_EMULATOR=wine
+          export UPX_CONFIG_DISABLE_RUN_PACKED_TEST=ON # TODO FIXME: UPX problem
+          make UPX_XTARGET=llvm-mingw/i686-w64-mingw32-clang xtarget/all
+      - name: 'Build clang i686 static'
+        run: |
+          export CC="i686-w64-mingw32-clang -static $xflags" CXX="i686-w64-mingw32-clang++ -static $xflags $cxxflags"
+          export CMAKE_CROSSCOMPILING_EMULATOR=wine
+          export UPX_CONFIG_DISABLE_RUN_PACKED_TEST=ON # TODO FIXME: UPX problem
+          make UPX_XTARGET=llvm-mingw/i686-w64-mingw32-clang-static xtarget/all
+
+      - name: 'Build clang x86_64'
+        run: |
+          export CC="x86_64-w64-mingw32-clang $xflags" CXX="x86_64-w64-mingw32-clang++ $xflags $cxxflags"
+          export CMAKE_CROSSCOMPILING_EMULATOR=wine
+          make UPX_XTARGET=llvm-mingw/x86_64-w64-mingw32-clang xtarget/all
+      - name: 'Build clang x86_64 static'
+        run: |
+          export CC="x86_64-w64-mingw32-clang -static $xflags" CXX="x86_64-w64-mingw32-clang++ -static $xflags $cxxflags"
+          export CMAKE_CROSSCOMPILING_EMULATOR=wine
+          make UPX_XTARGET=llvm-mingw/x86_64-w64-mingw32-clang-static xtarget/all
+
+      - run: ls -l build/*/*/*/upx* || true
+      - run: llvm-size build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true
+
+      - name: 'Make artifact'
+        run: |
+          N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-weekly-ci-${{ matrix.name }}-${{ matrix.llvm_version }}" | sed 's/[^0-9a-zA-Z_.+-]/-/g')
+          mkdir -p "tmp/artifact/$N"
+          for f in build/*/*/*/upx.exe; do
+            d="${f%/*}" # dirname
+            DESTDIR="$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithDestdir/$d"         cmake --install $d
+            DESTDIR="$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithDestdir/$d"         cmake --install $d --prefix /temp/local/upx
+            DESTDIR="$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithDestdirAndStrip/$d" cmake --install $d --strip
+            DESTDIR="$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithDestdirAndStrip/$d" cmake --install $d --strip --prefix /temp/local/upx
+            cmake --install $d --prefix "$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithPrefix/$d"
+            cmake --install $d --prefix "$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithPrefixAndStrip/$d" --strip
+          done
+          (cd build && cp -v -ai --parents */*/*/upx.exe "../tmp/artifact/$N")
+          (cd build && shopt -s globstar && cp -v -ai --parents **/dt_cxxlib.* "../tmp/artifact/$N")
+          if command -v hardlink >/dev/null; then (cd "tmp/artifact/$N" && hardlink .) fi
+          (cd tmp/artifact && tar --sort=name --zstd -cf "$N.tar.zst" "$N" && rm -rf "./$N" && ls -la && zstd -tq "$N.tar.zst")
+          echo "artifact_name=$N" >> $GITHUB_ENV
+      - name: ${{ format('Upload artifact {0}', env.artifact_name) }}
+        uses: actions/upload-artifact@v6
+        with: { name: '${{ env.artifact_name }}', path: tmp/artifact }
+
+      - name: ${{ format('Install Wine {0}', env.container) }}
+        run: |
+          apt-get install -y wine wine32:i386 wine64
+          ls -ldF /usr/bin/wine* /etc/alternatives/*wine* || true
+          mkdir -p -v ~/.wine && wineboot --init
+      - run: dpkg -l
+
+      - name: 'Run ctest tests i686 static with Wine'
+        run: |
+          upx_exe_runner="wine"
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/llvm-mingw/i686-w64-mingw32-clang-static/debug/upx.exe --sysinfo -vv
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/llvm-mingw/i686-w64-mingw32-clang-static/release/upx.exe --sysinfo -vv
+          make UPX_XTARGET=llvm-mingw/i686-w64-mingw32-clang-static xtarget/all+test
+          ls -ld ./build/*/*/*/XTesting/*/* || true
+          rm -rf ./build/*/*/*/XTesting/*/*
+      - name: 'Run ctest tests x86_64 static with Wine'
+        run: |
+          upx_exe_runner="wine"
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/llvm-mingw/x86_64-w64-mingw32-clang-static/debug/upx.exe --sysinfo -vv
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/llvm-mingw/x86_64-w64-mingw32-clang-static/release/upx.exe --sysinfo -vv
+          make UPX_XTARGET=llvm-mingw/x86_64-w64-mingw32-clang-static xtarget/all+test
+          ls -ld ./build/*/*/*/XTesting/*/* || true
+          rm -rf ./build/*/*/*/XTesting/*/*
+
+      - name: 'Run test suite under Wine'
+        #if: false
+        run: |
+          export upx_exe_runner="wine"
+          export upx_exe=./upx.exe
+          export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"
+          export UPX_DEBUG_DOCTEST_DISABLE=1
+          jobs="i686-w64-mingw32-clang-static/debug i686-w64-mingw32-clang-static/release"
+          jobs="$jobs x86_64-w64-mingw32-clang-static/debug x86_64-w64-mingw32-clang-static/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -kv --lb 'cd build/llvm-mingw/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs || true
+          ls -ld ./build/*/*/*/tmp-upx-testsuite* || true
+          rm -rf ./build/*/*/*/tmp-upx-testsuite*
+
+      - run: ls -l build/*/*/*/upx* || true
+      - run: llvm-size build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true

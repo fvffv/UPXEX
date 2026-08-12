@@ -1,0 +1,407 @@
+# Copyright (C) Markus Franz Xaver Johannes Oberhumer
+
+name: Extra Cross Builds
+
+on: [workflow_dispatch]
+
+defaults: { run: { shell: bash } }
+
+env:
+  CMAKE_REQUIRED_QUIET: 'OFF'
+  CMAKE_VERBOSE_MAKEFILE: 'ON'
+  CTEST_OUTPUT_ON_FAILURE: 'ON'
+  DEBIAN_FRONTEND: noninteractive
+  NO_COLOR: 1
+  UPX_CMAKE_BUILD_FLAGS: --verbose
+  UPX_CMAKE_CONFIG_FLAGS: -Wdev --warn-uninitialized
+  #UPX_CONFIG_DISABLE_RELEASE_O2: 'ON'
+  UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UPX: '$$<$$<CONFIG:Release>:-fomit-frame-pointer>'
+  UPX_CONFIG_HAVE_WORKING_BUILD_RPATH: 'ON'
+  UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
+  UPX_DEBUG_TEST_LIBC_QSORT: 1
+  ZSTD_CLEVEL: 17
+
+jobs:
+  job-extra-cross-builds: # uses cmake + make
+    if: github.repository_owner == 'upx'
+    name: Extra Cross Builds
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { container: 'ubuntu:20.04', target: g++-aarch64-linux-gnu, qemu: qemu-aarch64 }
+          - { container: 'ubuntu:20.04', target: g++-arm-linux-gnueabi, qemu: qemu-arm }
+          - { container: 'ubuntu:20.04', target: g++-arm-linux-gnueabihf, qemu: qemu-arm }
+          - { container: 'ubuntu:20.04', target: g++-i686-linux-gnu, qemu: qemu-i386 }
+          - { container: 'ubuntu:20.04', target: g++-mips-linux-gnu, qemu: qemu-mips }
+          - { container: 'ubuntu:20.04', target: g++-mipsel-linux-gnu, qemu: qemu-mipsel }
+          - { container: 'ubuntu:20.04', target: g++-powerpc-linux-gnu, qemu: qemu-ppc }
+          - { container: 'ubuntu:20.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 }
+          - { container: 'ubuntu:20.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le }
+          - { container: 'ubuntu:20.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64 }
+
+          - { container: 'ubuntu:22.04', target: g++-aarch64-linux-gnu, qemu: qemu-aarch64 }
+          - { container: 'ubuntu:22.04', target: g++-arm-linux-gnueabi, qemu: qemu-arm }
+          - { container: 'ubuntu:22.04', target: g++-arm-linux-gnueabihf, qemu: qemu-arm }
+          - { container: 'ubuntu:22.04', target: g++-i686-linux-gnu, qemu: qemu-i386 }
+          - { container: 'ubuntu:22.04', target: g++-mips-linux-gnu, qemu: qemu-mips }
+          - { container: 'ubuntu:22.04', target: g++-mipsel-linux-gnu, qemu: qemu-mipsel }
+          - { container: 'ubuntu:22.04', target: g++-powerpc-linux-gnu, qemu: qemu-ppc }
+          - { container: 'ubuntu:22.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 }
+          - { container: 'ubuntu:22.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le }
+          - { container: 'ubuntu:22.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64 }
+
+          - { container: 'ubuntu:24.04', target: g++-aarch64-linux-gnu, qemu: qemu-aarch64 }
+          - { container: 'ubuntu:24.04', target: g++-arm-linux-gnueabi, qemu: qemu-arm }
+          - { container: 'ubuntu:24.04', target: g++-arm-linux-gnueabihf, qemu: qemu-arm }
+          - { container: 'ubuntu:24.04', target: g++-i686-linux-gnu, qemu: qemu-i386 }
+          - { container: 'ubuntu:24.04', target: g++-mips-linux-gnu, qemu: qemu-mips }
+          - { container: 'ubuntu:24.04', target: g++-mipsel-linux-gnu, qemu: qemu-mipsel }
+          - { container: 'ubuntu:24.04', target: g++-powerpc-linux-gnu, qemu: qemu-ppc }
+          - { container: 'ubuntu:24.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 }
+          - { container: 'ubuntu:24.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 -cpu power10, extra: -power10 }
+          - { container: 'ubuntu:24.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le }
+          - { container: 'ubuntu:24.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le -cpu power10, extra: -power10 }
+          - { container: 'ubuntu:24.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64 }
+          - { container: 'ubuntu:24.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -thead-c906 }
+
+          - { container: 'ubuntu:26.04', target: g++-aarch64-linux-gnu, qemu: qemu-aarch64 }
+          - { container: 'ubuntu:26.04', target: g++-arm-linux-gnueabi, qemu: qemu-arm }
+          - { container: 'ubuntu:26.04', target: g++-arm-linux-gnueabihf, qemu: qemu-arm }
+          - { container: 'ubuntu:26.04', target: g++-i686-linux-gnu, qemu: qemu-i386 }
+          # { container: 'ubuntu:26.04', target: g++-mips-linux-gnu, qemu: qemu-mips }
+          # { container: 'ubuntu:26.04', target: g++-mipsel-linux-gnu, qemu: qemu-mipsel }
+          - { container: 'ubuntu:26.04', target: g++-powerpc-linux-gnu, qemu: qemu-ppc }
+          - { container: 'ubuntu:26.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 }
+          - { container: 'ubuntu:26.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 -cpu power10, extra: -power10 }
+          - { container: 'ubuntu:26.04', target: g++-powerpc64-linux-gnu, qemu: qemu-ppc64 -cpu power11, extra: -power11 }
+          - { container: 'ubuntu:26.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le }
+          - { container: 'ubuntu:26.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le -cpu power10, extra: -power10 }
+          - { container: 'ubuntu:26.04', target: g++-powerpc64le-linux-gnu, qemu: qemu-ppc64le -cpu power11, extra: -power11 }
+          - { container: 'ubuntu:26.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64 }
+          - { container: 'ubuntu:26.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -mcmodel-large }
+          - { container: 'ubuntu:26.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -rv64g }
+          - { container: 'ubuntu:26.04', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -thead-c906 }
+
+          - { container: 'ubuntu:26.10', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64 }
+          - { container: 'ubuntu:26.10', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -rv64g }
+          # { container: 'ubuntu:26.10', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -rva20u64 }
+          # { container: 'ubuntu:26.10', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -rva22u64 }
+          # { container: 'ubuntu:26.10', target: g++-riscv64-linux-gnu, qemu: qemu-riscv64, extra: -rva23u64 }
+
+          - { container: 'ubuntu:20.04', target: g++-mingw-w64-i686, wine: wine }
+          - { container: 'ubuntu:20.04', target: g++-mingw-w64-x86-64, wine: wine }
+          - { container: 'ubuntu:22.04', target: g++-mingw-w64-i686, wine: wine }
+          - { container: 'ubuntu:22.04', target: g++-mingw-w64-x86-64, wine: wine }
+          - { container: 'ubuntu:24.04', target: g++-mingw-w64-i686, Q_wine: wine }
+          - { container: 'ubuntu:24.04', target: g++-mingw-w64-x86-64, Q_wine: wine }
+          - { container: 'ubuntu:26.04', target: g++-mingw-w64-i686, Q_wine: wine }
+          - { container: 'ubuntu:26.04', target: g++-mingw-w64-x86-64, Q_wine: wine }
+
+          - { container: 'ubuntu:20.04', target: g++-alpha-linux-gnu, qemu: qemu-alpha }
+          # { container: 'ubuntu:20.04', target: g++-arc-linux-gnu }
+          - { container: 'ubuntu:20.04', target: g++-hppa-linux-gnu, qemu: qemu-hppa }
+          # { container: 'ubuntu:20.04', target: g++-loongarch64-linux-gnu, qemu: qemu-loongarch64 }
+          # { container: 'ubuntu:20.04', target: g++-m68k-linux-gnu, qemu: qemu-m68k }
+          - { container: 'ubuntu:20.04', target: g++-mips64-linux-gnuabi64, qemu: qemu-mips64 }
+          - { container: 'ubuntu:20.04', target: g++-mips64el-linux-gnuabi64, qemu: qemu-mips64el }
+          - { container: 'ubuntu:20.04', target: g++-s390x-linux-gnu, qemu: qemu-s390x }
+          # { container: 'ubuntu:20.04', target: g++-sh4-linux-gnu, qemu: qemu-sh4 }
+          # { container: 'ubuntu:20.04', target: g++-sparc64-linux-gnu, qemu: qemu-sparc64 }
+
+          - { container: 'ubuntu:22.04', target: g++-alpha-linux-gnu, qemu: qemu-alpha }
+          # { container: 'ubuntu:22.04', target: g++-arc-linux-gnu }
+          - { container: 'ubuntu:22.04', target: g++-hppa-linux-gnu, qemu: qemu-hppa }
+          # { container: 'ubuntu:22.04', target: g++-loongarch64-linux-gnu, qemu: qemu-loongarch64 }
+          # { container: 'ubuntu:22.04', target: g++-m68k-linux-gnu, qemu: qemu-m68k }
+          - { container: 'ubuntu:22.04', target: g++-mips64-linux-gnuabi64, qemu: qemu-mips64 }
+          - { container: 'ubuntu:22.04', target: g++-mips64el-linux-gnuabi64, qemu: qemu-mips64el }
+          - { container: 'ubuntu:22.04', target: g++-s390x-linux-gnu, qemu: qemu-s390x }
+          # { container: 'ubuntu:22.04', target: g++-sh4-linux-gnu, qemu: qemu-sh4 }
+          # { container: 'ubuntu:22.04', target: g++-sparc64-linux-gnu, qemu: qemu-sparc64 }
+
+          - { container: 'ubuntu:24.04', target: g++-alpha-linux-gnu, qemu: qemu-alpha }
+          - { container: 'ubuntu:24.04', target: g++-arc-linux-gnu }
+          - { container: 'ubuntu:24.04', target: g++-hppa-linux-gnu, qemu: qemu-hppa }
+          # { container: 'ubuntu:24.04', target: g++-loongarch64-linux-gnu, qemu: qemu-loongarch64 }
+          - { container: 'ubuntu:24.04', target: g++-m68k-linux-gnu, qemu: qemu-m68k }
+          - { container: 'ubuntu:24.04', target: g++-mips64-linux-gnuabi64, qemu: qemu-mips64 }
+          - { container: 'ubuntu:24.04', target: g++-mips64el-linux-gnuabi64, qemu: qemu-mips64el }
+          - { container: 'ubuntu:24.04', target: g++-s390x-linux-gnu, qemu: qemu-s390x }
+          - { container: 'ubuntu:24.04', target: g++-sh4-linux-gnu, qemu: qemu-sh4 }
+          - { container: 'ubuntu:24.04', target: g++-sparc64-linux-gnu, qemu: qemu-sparc64 }
+
+          - { container: 'ubuntu:26.04', target: g++-alpha-linux-gnu, qemu: qemu-alpha }
+          - { container: 'ubuntu:26.04', target: g++-arc-linux-gnu }
+          - { container: 'ubuntu:26.04', target: g++-hppa-linux-gnu, qemu: qemu-hppa }
+          - { container: 'ubuntu:26.04', target: g++-loongarch64-linux-gnu, qemu: qemu-loongarch64 }
+          - { container: 'ubuntu:26.04', target: g++-m68k-linux-gnu, qemu: qemu-m68k }
+          # { container: 'ubuntu:26.04', target: g++-mips64-linux-gnuabi64, qemu: qemu-mips64 }
+          # { container: 'ubuntu:26.04', target: g++-mips64el-linux-gnuabi64, qemu: qemu-mips64el }
+          - { container: 'ubuntu:26.04', target: g++-s390x-linux-gnu, qemu: qemu-s390x }
+          - { container: 'ubuntu:26.04', target: g++-sh4-linux-gnu, qemu: qemu-sh4 }
+          - { container: 'ubuntu:26.04', target: g++-sparc64-linux-gnu, qemu: qemu-sparc64 }
+
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    steps:
+      - run: uname -a; pwd; id; umask
+      - run: ulimit -a || true
+      - name: ${{ format('Install packages {0}', matrix.container) }}
+        run: |
+          apt-get update && apt-get upgrade -y
+          apt-get install -y --no-install-recommends bash ca-certificates cmake curl file git make ninja-build parallel strace tar time tree util-linux xz-utils zstd
+          apt-get install -y qemu-user "${{ matrix.target }}"
+      - name: ${{ format('Install MinGW posix-threads {0}', matrix.container) }}
+        run: |
+          # make sure that we use posix-threads (pthread/winpthreads) and NOT win32-threads
+          ls -ldF /etc/alternatives/*mingw* || true
+          for f in i686-w64-mingw32-g++ i686-w64-mingw32-gcc x86_64-w64-mingw32-g++ x86_64-w64-mingw32-gcc; do
+            if test -f /usr/bin/$f-posix; then update-alternatives --set $f /usr/bin/$f-posix; fi
+            ls -ldF /usr/bin/${f}* || true
+          done
+          ls -ldF /etc/alternatives/*mingw* || true
+      - run: dpkg -l
+      - name: ${{ format('Check out {0} source code', github.ref_name) }}
+        run: |
+          git config --global --add safe.directory '*' # needed when running in a container
+          git clone --branch "$GITHUB_REF_NAME" --depth 1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" .
+          git submodule update --init
+      - name: Check out test suite
+        run: git clone --depth=1 https://github.com/upx/upx-testsuite ../deps/upx-testsuite
+      - run: ls -laF "$HOME" "$GITHUB_WORKSPACE" || true
+      - run: set -x; cat "$HOME/.gitconfig" || true
+
+      - name: Make
+        run: |
+          toolchain="${{ matrix.target }}"
+          toolchain=${toolchain/-x86-64/-x86_64}
+          toolchain=${toolchain/#g++-/}
+          case $toolchain in
+            mingw-w64-i686) toolchain=i686-w64-mingw32 ;;
+            mingw-w64-x86_64) toolchain=x86_64-w64-mingw32 ;;
+          esac
+          echo "========== $toolchain"
+          echo "toolchain=$toolchain" >> $GITHUB_ENV
+          export CC=/usr/bin/${toolchain}-gcc
+          export CXX=/usr/bin/${toolchain}-g++
+          export CMAKE_AR=/usr/bin/${toolchain}-ar
+          export CMAKE_RANLIB=/usr/bin/${toolchain}-ranlib
+          ls -ldF $CC $CXX $CMAKE_AR $CMAKE_RANLIB
+          ls -ldF /usr/bin/*{gcc,g++,ar,ranlib}
+          ls -ldF /usr/bin/${toolchain}*
+          if [[ -n "${{ matrix.qemu }}" ]]; then true;
+            qemu="${{ matrix.qemu }} -L /usr/${toolchain}"
+            export CMAKE_CROSSCOMPILING_EMULATOR="${qemu// /;}"
+            echo "CMAKE_CROSSCOMPILING_EMULATOR=$CMAKE_CROSSCOMPILING_EMULATOR"
+          fi
+          case $toolchain in
+            # these old architectures do not support sanitize
+            alpha-linux-gnu) export UPX_CONFIG_DISABLE_SANITIZE=ON ;;
+            hppa-linux-gnu) export UPX_CONFIG_DISABLE_SANITIZE=ON ;;
+            # avoid warnings about arm libstdc++ ABI change in gcc-7
+            arm-linux-*) CXX="$CXX -Wno-psabi" ;;
+            armeb-linux-*) CXX="$CXX -Wno-psabi" ;;
+            m68k-linux-gnu) export UPX_CONFIG_EXPECT_THREADS=OFF ;;
+            # avoid sanitize link errors with current MinGW-w64 versions; link libstdc++ statically
+            i686-w64-mingw32)
+              export UPX_CONFIG_DISABLE_SANITIZE=ON
+              #export UPX_CONFIG_EXPECT_THREADS=OFF
+              export CMAKE_SYSTEM_NAME=Windows
+              export CMAKE_SYSTEM_PROCESSOR=X86
+              export CMAKE_CROSSCOMPILING_EMULATOR=wine
+              CC="$CC -D_WIN32_WINNT=0x0501"; CXX="$CXX -D_WIN32_WINNT=0x0501"
+              CC="$CC -static"; CXX="$CXX -static" ;;
+            x86_64-w64-mingw32)
+              export UPX_CONFIG_DISABLE_SANITIZE=ON
+              #export UPX_CONFIG_EXPECT_THREADS=OFF
+              export CMAKE_SYSTEM_NAME=Windows
+              export CMAKE_SYSTEM_PROCESSOR=AMD64
+              export CMAKE_CROSSCOMPILING_EMULATOR=wine
+              CC="$CC -D_WIN32_WINNT=0x0501"; CXX="$CXX -D_WIN32_WINNT=0x0501"
+              CC="$CC -static"; CXX="$CXX -static" ;;
+          esac
+          #if [[ "${{ matrix.container }}" == ubuntu:2[46].04 && $toolchain == powerpc64*-linux-gnu && "${{ matrix.extra }}" == *power10 ]]; then true;
+          if [[ $toolchain == powerpc64*-linux-gnu && "${{ matrix.extra }}" == *power10 ]]; then true;
+            export CC="$CC -mcpu=power10" CXX="$CXX -mcpu=power10"
+          fi
+          if [[ $toolchain == powerpc64*-linux-gnu && "${{ matrix.extra }}" == *power11 ]]; then true;
+            export CC="$CC -mcpu=power11" CXX="$CXX -mcpu=power11"
+          fi
+          if [[ $toolchain == riscv64-linux-gnu ]]; then true;
+            #export CC="$CC -mno-strict-align" CXX="$CXX -mno-strict-align"
+          fi
+          if [[ $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *mcmodel-large ]]; then true;
+            export CC="$CC -mcmodel=large" CXX="$CXX -mcmodel=large"
+            export CC="$CC -fno-PIC" CXX="$CXX -fno-PIC"
+            export UPX_CONFIG_DISABLE_SHARED_LIBS=ON
+          fi
+          if [[ $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *rva20u64 ]]; then true;
+            export CC="$CC -march=rva20u64" CXX="$CXX -march=rva20u64"
+          fi
+          if [[ $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *rva22u64 ]]; then true;
+            export CC="$CC -march=rva22u64" CXX="$CXX -march=rva22u64"
+          fi
+          if [[ $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *rva23u64 ]]; then true;
+            export CC="$CC -march=rva23u64" CXX="$CXX -march=rva23u64"
+          fi
+          if [[ $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *rv64g ]]; then true;
+            export CC="$CC -march=rv64g" CXX="$CXX -march=rv64g"
+          fi
+          #if [[ "${{ matrix.container }}" == ubuntu:2[46].04 && $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *thead-c906 ]]; then true;
+          if [[ $toolchain == riscv64-linux-gnu && "${{ matrix.extra }}" == *thead-c906 ]]; then true;
+            export CC="$CC -mtune=thead-c906" CXX="$CXX -mtune=thead-c906"
+          fi
+          export UPX_CONFIG_DISABLE_SELF_PACK_TEST=ON
+          [[ $toolchain == aarch64-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == arm-linux-gnu* ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == armeb-linux-gnu* ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == i686-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == mips-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == mipsel-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == powerpc-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          #[[ $toolchain == powerpc64-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == powerpc64le-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == riscv64-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == x86_64-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ "${{ matrix.container }}" == 'ubuntu:20.04' ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=ON
+          #[[ "${{ matrix.container }}" == 'ubuntu:22.04' && $toolchain == riscv64-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=ON
+          #[[ "${{ matrix.container }}" == 'ubuntu:24.04' && $toolchain == riscv64-linux-gnu ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=ON
+          [[ $toolchain == i686-w64-mingw32 ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          [[ $toolchain == x86_64-w64-mingw32  ]] && export UPX_CONFIG_DISABLE_SELF_PACK_TEST=OFF
+          echo "UPX_CONFIG_DISABLE_SELF_PACK_TEST=$UPX_CONFIG_DISABLE_SELF_PACK_TEST" >> $GITHUB_ENV
+          if [[ 1 == 1 ]]; then true;
+            export CXX="$CXX -std=gnu++2a"
+            export UPX_CONFIG_DISABLE_CXX_STANDARD=ON
+          fi
+          echo -e "CC=$CC\nCXX=$CXX" >> $GITHUB_ENV
+          make UPX_XTARGET=xtarget/${toolchain} xtarget/all
+
+      - run: set -x; $CC --version; $CXX --version
+      - run: set -x; $CC -march=help || true
+      - run: $CC  -E -x c   -dM /dev/null | LC_ALL=C sort
+      - run: $CXX -E -x c++ -dM /dev/null | LC_ALL=C sort
+      - run: ls -l build/*/*/*/upx* || true
+      - run: set -x; ${toolchain}-size build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true
+
+      - name: Make artifact
+        run: |
+          N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-${{ matrix.container }}-${{ matrix.target }}${{ matrix.extra }}" | sed 's/[^0-9a-zA-Z_.+-]/-/g')
+          mkdir -p "tmp/artifact/$N"
+          dirs="${toolchain}/debug ${toolchain}/release"
+          for d in $dirs; do DESTDIR="$PWD/tmp/artifact/$N/InstallWithCMake/InstallWithDestdir/$d" cmake --install build/xtarget/$d; done
+          (cd build && shopt -s nullglob && cp -v -ai --parents */upx{,.exe} */*/*/upx{,.exe} "../tmp/artifact/$N")
+          (cd build && shopt -s globstar && cp -v -ai --parents **/dt_cxxlib.* "../tmp/artifact/$N")
+          if command -v hardlink >/dev/null; then (cd "tmp/artifact/$N" && hardlink .) fi
+          (cd tmp/artifact && tar --sort=name --zstd -cf "$N.tar.zst" "$N" && rm -rf "./$N" && ls -la && zstd -tq "$N.tar.zst")
+          echo "artifact_name=$N" >> $GITHUB_ENV
+      - name: ${{ format('Upload artifact {0}', env.artifact_name) }}
+        uses: actions/upload-artifact@v7
+        with: { name: '${{ env.artifact_name }}', path: tmp/artifact }
+
+      - name: ${{ format('Inspect /usr/{0}', env.toolchain) }}
+        run: |
+          echo "/usr/${toolchain}"
+          [[ ! -d "/usr/${toolchain}" ]] && exit 1
+          set -x
+          ls -laF /usr
+          ls -laF /usr/${toolchain}
+          ls -laF /usr/${toolchain}/bin*
+          ls -laF /usr/${toolchain}/lib*
+          tree -sF -d --du /usr/${toolchain}
+          tree -sF    --du /usr/${toolchain}
+          find /usr/${toolchain} -type f -print0 | LC_ALL=C sort -z | xargs -0r ls -ldF
+
+      - name: ${{ format('Run basic tests with QEMU {0}', matrix.qemu) }}
+        if: ${{ matrix.qemu }}
+        run: |
+          set -x
+          export upx_exe_runner="${{ matrix.qemu }}"
+          upx_exe_runner="$upx_exe_runner -L /usr/${toolchain}"
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/xtarget/${toolchain}/debug/upx --sysinfo -vv || true
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/xtarget/${toolchain}/release/upx --sysinfo -vv
+
+      - name: ${{ format('Run ctest tests with QEMU {0}', matrix.qemu) }}
+        if: ${{ matrix.qemu }}
+        run: |
+          jobs="${toolchain}/debug ${toolchain}/release"
+          [[ $toolchain == alpha-linux-gnu ]] && jobs="${toolchain}/release"
+          [[ $toolchain == arm-linux-gnueabihf ]] && jobs="${toolchain}/release"
+          [[ $toolchain == riscv64-linux-gnu ]] && exit 0
+          echo "===== parallel jobs: $jobs"
+          CTEST_JOBS=4 parallel -kv --lb 'make build/xtarget/{}+test' ::: $jobs
+          ls -ld ./build/*/*/*/XTesting/*/* || true
+          rm -rf ./build/*/*/*/XTesting/*/*
+
+      - name: ${{ format('Mimic ctest tests with QEMU {0}', matrix.qemu) }}
+        if: ${{ matrix.qemu }}
+        run: |
+          export upx_exe_runner="${{ matrix.qemu }}"
+          upx_exe_runner="$upx_exe_runner -L /usr/${toolchain}"
+          jobs="${toolchain}/debug ${toolchain}/release"
+          #[[ "${{ matrix.container }}" == "ubuntu:24.04" && $toolchain == alpha-linux-gnu ]] && jobs="${toolchain}/release"
+          [[ $toolchain == alpha-linux-gnu ]] && jobs="${toolchain}/release"
+          [[ $toolchain == arm-linux-gnueabihf ]] && jobs="${toolchain}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -kv --lb 'cd build/xtarget/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
+          ls -ld ./build/*/*/*/upx-* || true
+          rm -rf ./build/*/*/*/upx-*
+
+      - name: ${{ format('Run test suite with QEMU {0}', matrix.qemu) }}
+        if: ${{ matrix.qemu }}
+        run: |
+          export upx_exe_runner="${{ matrix.qemu }}"
+          upx_exe_runner="$upx_exe_runner -L /usr/${toolchain}"
+          export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"
+          jobs="${toolchain}/debug ${toolchain}/release"
+          [[ $toolchain == alpha-linux-gnu ]] && jobs="${toolchain}/release"
+          [[ $toolchain == arm-linux-gnueabihf ]] && jobs="${toolchain}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -kv --lb 'cd build/xtarget/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs
+          ls -ld ./build/*/*/*/tmp-upx-testsuite* || true
+          rm -rf ./build/*/*/*/tmp-upx-testsuite*
+
+      - name: ${{ format('Install Wine {0}', matrix.container) }}
+        if: ${{ matrix.wine || matrix.Q_wine }}
+        run: |
+          dpkg --add-architecture i386
+          apt-get update && apt-get upgrade -y
+          apt-get install -y wine wine32:i386 wine64
+          ls -ldF /usr/bin/wine* /etc/alternatives/*wine* || true
+          mkdir -p -v ~/.wine && wineboot --init
+      - run: dpkg -l
+        if: ${{ matrix.wine || matrix.Q_wine }}
+
+      - name: ${{ format('Run basic tests with Wine {0}', matrix.wine) }}
+        if: ${{ matrix.wine || matrix.Q_wine }}
+        run: |
+          set -x
+          export upx_exe_runner="wine"
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/xtarget/${toolchain}/debug/upx.exe --sysinfo -vv
+          UPX_DEBUG_DOCTEST_VERBOSE=1 $upx_exe_runner ./build/xtarget/${toolchain}/release/upx.exe --sysinfo -vv
+
+      - name: ${{ format('Run ctest tests with Wine {0}', matrix.wine) }}
+        if: ${{ matrix.wine }}
+        run: |
+          jobs="${toolchain}/debug ${toolchain}/release"
+          echo "===== parallel jobs: $jobs"
+          CTEST_JOBS=4 parallel -kv --lb 'make build/xtarget/{}+test' ::: $jobs
+          ls -ld ./build/*/*/*/XTesting/*/* || true
+          rm -rf ./build/*/*/*/XTesting/*/*
+
+      - name: ${{ format('Run test suite with Wine {0}', matrix.wine) }}
+        if: ${{ matrix.wine }}
+        run: |
+          export upx_exe_runner="wine"
+          export upx_exe=./upx.exe
+          export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"
+          jobs="${toolchain}/debug ${toolchain}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -kv --lb 'cd build/xtarget/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs
+          ls -ld ./build/*/*/*/tmp-upx-testsuite* || true
+          rm -rf ./build/*/*/*/tmp-upx-testsuite*
+
+      - run: ls -l build/*/*/*/upx* || true
+      - run: set -x; ${toolchain}-size build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true

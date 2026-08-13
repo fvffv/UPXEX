@@ -85,6 +85,12 @@ Recommended level 1 example:
 upx.exe --misa77-level=1 C:\test.exe
 ```
 
+For 32-bit applications, prepend the --force parameter.
+
+```powershell
+upx.exe --force --misa77-level=1 C:\test.exe
+```
+
 You can also use **UPXEx GUI (UPXEXGUI)** for drag-and-drop packing, algorithm and level selection, unpacking, and Windows startup comparison. It will be published in **Releases**.
 
 ---
@@ -168,6 +174,12 @@ upx.exe --misa77-level=<等级> <软件路径>
 
 ```powershell
 upx.exe --misa77-level=1 C:\test.exe
+```
+
+对于32位应用 请在前面加上--force 参数。
+
+```powershell
+upx.exe --force --misa77-level=1 C:\test.exe
 ```
 
 也可以使用 **UPXEx GUI（UPXEXGUI）**：支持拖放压缩、算法与等级选择、脱壳，以及 Windows 启动时间对比。后续将在 **Releases** 页面发布。

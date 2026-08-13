@@ -40,26 +40,31 @@ Only the original executable, UPX `--fast`, and recommended misa77 level 1 are s
 | test2 | Original (uncompressed) | 61.8 MB | 208.4 | 208.7 |
 | test2 | UPX `--fast` | 30.5 MB | 450.5 | 451.9 |
 | test2 | misa77 level 1 (recommended) | 34.2 MB | 269.3 | 268.7 |
+
 | Test | Variant | File size | Median (ms) | Mean (ms) |
 |---|---|---:|---:|---:|
 | test3 | Original (uncompressed) | 136.0 MB | 86.7 | 87.3 |
 | test3 | UPX `--fast` | 75.9 MB | 476.1 | 476.5 |
 | test3 | misa77 level 1 (recommended) | 77.6 MB | 149.3 | 150.1 |
+
 | Test | Variant | File size | Median (ms) | Mean (ms) |
 |---|---|---:|---:|---:|
 | test4 | Original (uncompressed) | 22.7 MB | 30.4 | 43.1 |
 | test4 | UPX `--fast` | 13.3 MB | 108.0 | 108.3 |
 | test4 | misa77 level 1 (recommended) | 13.8 MB | 50.4 | 50.4 |
+
 | Test | Variant | File size | Median (ms) | Mean (ms) |
 |---|---|---:|---:|---:|
 | test5 | Original (uncompressed) | 17.7 MB | 30.5 | 30.4 |
 | test5 | UPX `--fast` | 13.2 MB | 92.5 | 92.3 |
 | test5 | misa77 level 1 (recommended) | 13.3 MB | 61.1 | 59.0 |
+
 | Test | Variant | File size | Median (ms) | Mean (ms) |
 |---|---|---:|---:|---:|
 | test6 | Original (uncompressed) | 6.4 MB | 228.5 | 242.8 |
 | test6 | UPX `--fast` | 3.0 MB | 259.5 | 263.8 |
 | test6 | misa77 level 1 (recommended) | 3.3 MB | 243.3 | 242.4 |
+
 | Test | Variant | File size | Median (ms) | Mean (ms) |
 |---|---|---:|---:|---:|
 | test7 | Original (uncompressed) | 18.4 MB | 17.1 | 17.3 |
@@ -114,21 +119,39 @@ You can also use **UPXEx GUI (UPXEXGUI)** for drag-and-drop packing, algorithm a
 | test1 | 原版（未压缩） | 28.1 MB | 196.7 | 198.3 |
 | test1 | UPX `--fast` | 14.7 MB | 315.5 | 317.1 |
 | test1 | misa77 等级 1（推荐） | 16.4 MB | 223.6 | 224.2 |
+
+| 测试 | 版本 | 文件大小 | 中位数（ms） | 平均值（ms） |
+|---|---|---:|---:|---:|
 | test2 | 原版（未压缩） | 61.8 MB | 208.4 | 208.7 |
 | test2 | UPX `--fast` | 30.5 MB | 450.5 | 451.9 |
 | test2 | misa77 等级 1（推荐） | 34.2 MB | 269.3 | 268.7 |
+
+| 测试 | 版本 | 文件大小 | 中位数（ms） | 平均值（ms） |
+|---|---|---:|---:|---:|
 | test3 | 原版（未压缩） | 136.0 MB | 86.7 | 87.3 |
 | test3 | UPX `--fast` | 75.9 MB | 476.1 | 476.5 |
 | test3 | misa77 等级 1（推荐） | 77.6 MB | 149.3 | 150.1 |
+
+| 测试 | 版本 | 文件大小 | 中位数（ms） | 平均值（ms） |
+|---|---|---:|---:|---:|
 | test4 | 原版（未压缩） | 22.7 MB | 30.4 | 43.1 |
 | test4 | UPX `--fast` | 13.3 MB | 108.0 | 108.3 |
 | test4 | misa77 等级 1（推荐） | 13.8 MB | 50.4 | 50.4 |
+
+| 测试 | 版本 | 文件大小 | 中位数（ms） | 平均值（ms） |
+|---|---|---:|---:|---:|
 | test5 | 原版（未压缩） | 17.7 MB | 30.5 | 30.4 |
 | test5 | UPX `--fast` | 13.2 MB | 92.5 | 92.3 |
 | test5 | misa77 等级 1（推荐） | 13.3 MB | 61.1 | 59.0 |
+
+| 测试 | 版本 | 文件大小 | 中位数（ms） | 平均值（ms） |
+|---|---|---:|---:|---:|
 | test6 | 原版（未压缩） | 6.4 MB | 228.5 | 242.8 |
 | test6 | UPX `--fast` | 3.0 MB | 259.5 | 263.8 |
 | test6 | misa77 等级 1（推荐） | 3.3 MB | 243.3 | 242.4 |
+
+| 测试 | 版本 | 文件大小 | 中位数（ms） | 平均值（ms） |
+|---|---|---:|---:|---:|
 | test7 | 原版（未压缩） | 18.4 MB | 17.1 | 17.3 |
 | test7 | UPX `--fast` | 10.7 MB | 91.7 | 92.4 |
 | test7 | misa77 等级 1（推荐） | 11.3 MB | 34.9 | 34.8 |

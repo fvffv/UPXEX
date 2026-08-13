@@ -1,0 +1,194 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UpxGui.MainWindow"
+        Width="900"
+        Height="760"
+        MinWidth="720"
+        MinHeight="620"
+        Title="UPXEx GUI"
+        WindowStartupLocation="CenterScreen">
+  <Window.Styles>
+    <Style Selector="Border.drop-zone">
+      <Setter Property="Background" Value="#182230" />
+      <Setter Property="BorderBrush" Value="#4B8CFF" />
+      <Setter Property="BorderThickness" Value="1.5" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="24" />
+    </Style>
+    <Style Selector="Border.drop-zone:pointerover">
+      <Setter Property="Background" Value="#203453" />
+      <Setter Property="BorderBrush" Value="#79AAFF" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="#151B25" />
+      <Setter Property="BorderBrush" Value="#283548" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="18" />
+    </Style>
+    <Style Selector="TextBlock.section-note">
+      <Setter Property="Opacity" Value="0.68" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+  </Window.Styles>
+
+  <Grid Margin="28" RowDefinitions="Auto,*,Auto" RowSpacing="18">
+    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="12">
+      <StackPanel Spacing="5">
+        <TextBlock x:Name="AppTitleText" Text="UPXEx GUI" FontSize="28" FontWeight="SemiBold" />
+        <TextBlock x:Name="AppSubtitleText" Text="面向启动速度的 UPX 压缩工具" Opacity="0.72" FontSize="14" />
+      </StackPanel>
+      <Border Grid.Column="1" Background="#213B63" CornerRadius="12" Padding="10,5" VerticalAlignment="Center">
+        <TextBlock x:Name="FastStartBadgeText" Text="misa77 · Fast Start" Foreground="#A9C8FF" FontWeight="SemiBold" />
+      </Border>
+      <Button x:Name="GitHubButton" Grid.Column="2" Width="38" Height="34" Padding="7" VerticalAlignment="Center" Click="GitHub_Click" ToolTip.Tip="GitHub">
+        <PathIcon Width="20" Height="20" Data="M12,2C6.48,2 2,6.58 2,12.23C2,16.75 4.87,20.58 8.84,21.93C9.34,22.03 9.52,21.71 9.52,21.44C9.52,21.19 9.51,20.35 9.5,19.24C6.73,19.86 6.14,17.86 6.14,17.86C5.68,16.66 5.03,16.34 5.03,16.34C4.12,15.7 5.1,15.71 5.1,15.71C6.1,15.78 6.63,16.76 6.63,16.76C7.52,18.32 8.97,17.87 9.54,17.6C9.63,16.94 9.89,16.49 10.18,16.23C7.97,15.97 5.65,15.09 5.65,11.18C5.65,10.07 6.03,9.16 6.66,8.45C6.56,8.19 6.21,7.15 6.76,5.73C6.76,5.73 7.6,5.46 9.51,6.79C10.31,6.56 11.16,6.45 12,6.45C12.84,6.45 13.69,6.56 14.49,6.79C16.4,5.46 17.24,5.73 17.24,5.73C17.79,7.15 17.44,8.19 17.34,8.45C17.97,9.16 18.35,10.07 18.35,11.18C18.35,15.1 16.03,15.96 13.81,16.22C14.17,16.54 14.49,17.16 14.49,18.11C14.49,19.47 14.48,20.57 14.48,21.44C14.48,21.71 14.66,22.04 15.17,21.93C19.14,20.58 22,16.75 22,12.23C22,6.58 17.52,2 12,2Z" />
+      </Button>
+      <ComboBox x:Name="LanguageBox" Grid.Column="3" Width="110" VerticalAlignment="Center">
+        <ComboBoxItem Tag="zh">中文</ComboBoxItem>
+        <ComboBoxItem Tag="en">English</ComboBoxItem>
+      </ComboBox>
+    </Grid>
+
+    <TabControl Grid.Row="1">
+      <TabItem x:Name="PackTab">
+        <TabItem.Header>
+          <TextBlock x:Name="PackTabHeaderText" MinWidth="100" TextAlignment="Center" TextWrapping="NoWrap" />
+        </TabItem.Header>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Grid Margin="0,16,0,0" RowDefinitions="Auto,Auto,*" RowSpacing="18">
+            <Border Classes="drop-zone" DragDrop.AllowDrop="True" DragDrop.Drop="TargetFile_Drop" PointerPressed="SelectFile_PointerPressed">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                <Border Width="44" Height="44" CornerRadius="10" Background="#244B82" VerticalAlignment="Center">
+                  <TextBlock Text="⇩" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                  <TextBlock x:Name="DropZoneTitleText" Text="拖入要压缩的可执行程序，或点击这里选择" FontSize="16" FontWeight="SemiBold" />
+                  <TextBlock x:Name="SelectedFileText" Text="尚未选择文件" Opacity="0.68" TextTrimming="CharacterEllipsis" MaxWidth="530" />
+                </StackPanel>
+                <Button x:Name="SelectFileButton" Grid.Column="2" Content="选择文件" Click="SelectFile_Click" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="18">
+              <Border Classes="card">
+                <StackPanel Spacing="12">
+                  <TextBlock x:Name="AlgorithmLabelText" Text="压缩算法" FontWeight="SemiBold" FontSize="16" />
+                  <ComboBox x:Name="AlgorithmBox">
+                    <ComboBoxItem Tag="misa77">misa77（推荐：解压优先）</ComboBoxItem>
+                    <ComboBoxItem Tag="lz4">LZ4（快速压缩）</ComboBoxItem>
+                  </ComboBox>
+                  <TextBlock x:Name="AlgorithmDescription" Text="默认推荐：misa77 等级 1，适合更快启动。" Classes="section-note" />
+                </StackPanel>
+              </Border>
+
+              <Border Grid.Column="1" Classes="card">
+                <StackPanel Spacing="12">
+                  <TextBlock x:Name="LevelLabel" Text="misa77 等级" FontWeight="SemiBold" FontSize="16" />
+                  <ComboBox x:Name="LevelBox" />
+                  <TextBlock x:Name="LevelDescription" Text="等级 1（推荐）：为解压速度设计的默认档位。" Classes="section-note" />
+                </StackPanel>
+              </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Classes="card">
+              <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
+                <TextBlock x:Name="PackExecutionTitleText" Text="输出与执行" FontWeight="SemiBold" FontSize="16" />
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                  <TextBlock x:Name="OutputLabelText" Text="输出文件" VerticalAlignment="Center" Opacity="0.76" />
+                  <TextBox x:Name="OutputPathBox" Grid.Column="1" PlaceholderText="默认在源文件目录创建 xxx-packed.exe" />
+                </Grid>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12">
+                  <CheckBox x:Name="ReleaseMemoryCheckBox" IsChecked="False" Content="压缩完成后释放解压工作集内存（--release-memory）" VerticalAlignment="Center" />
+                  <TextBlock x:Name="ReleaseMemoryWarningText" Classes="section-note" VerticalAlignment="Center" Foreground="#F2C572" Text="部分程序可能无法启动，请自行测试。" />
+                </StackPanel>
+                <TextBox x:Name="LogTextBox" Grid.Row="3" MinHeight="130" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#0F141C" FontFamily="Cascadia Mono, Consolas, monospace" />
+                <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <TextBlock x:Name="StatusText" Text="准备就绪" VerticalAlignment="Center" Opacity="0.76" />
+                  <Button x:Name="PackButton" Grid.Column="1" Content="开始压缩" Padding="22,9" Click="Pack_Click" IsEnabled="False" />
+                </Grid>
+              </Grid>
+            </Border>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem x:Name="UnpackTab">
+        <TabItem.Header>
+          <TextBlock x:Name="UnpackTabHeaderText" MinWidth="120" TextAlignment="Center" TextWrapping="NoWrap" />
+        </TabItem.Header>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Border Classes="card" Margin="0,16,0,0">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" RowSpacing="14">
+              <TextBlock x:Name="UnpackTitleText" Text="UPX 脱壳" FontWeight="SemiBold" FontSize="18" />
+              <TextBlock x:Name="UnpackHintText" Grid.Row="1" Text="选择由 UPX 压缩的文件，调用 --decompress 输出其解压副本。" Classes="section-note" />
+              <Border Grid.Row="2"
+                      Classes="drop-zone"
+                      Padding="14"
+                      DragDrop.AllowDrop="True"
+                      DragDrop.Drop="UnpackFile_Drop"
+                      PointerPressed="SelectUnpackInput_PointerPressed">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                  <TextBlock Text="⇩" FontSize="22" VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                    <TextBlock x:Name="UnpackInputLabelText" Text="拖入 UPX 压缩文件，或点击这里选择" FontWeight="SemiBold" />
+                    <TextBox x:Name="UnpackInputBox" IsReadOnly="True" />
+                  </StackPanel>
+                  <Button x:Name="SelectUnpackInputButton" Grid.Column="2" Content="选择文件" Click="SelectUnpackInput_Click" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <Grid Grid.Row="3" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <TextBlock x:Name="UnpackOutputLabelText" Text="脱壳输出" VerticalAlignment="Center" Opacity="0.76" />
+                <TextBox x:Name="UnpackOutputBox" Grid.Column="1" />
+              </Grid>
+              <TextBox x:Name="UnpackLogTextBox" Grid.Row="4" MinHeight="190" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#0F141C" FontFamily="Cascadia Mono, Consolas, monospace" />
+              <Grid Grid.Row="5" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <TextBlock x:Name="UnpackStatusText" Text="准备就绪" VerticalAlignment="Center" Opacity="0.76" />
+                <Button x:Name="UnpackButton" Grid.Column="1" Content="开始脱壳" Padding="22,9" Click="Unpack_Click" IsEnabled="False" />
+              </Grid>
+            </Grid>
+          </Border>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem x:Name="BenchmarkTab">
+        <TabItem.Header>
+          <TextBlock x:Name="BenchmarkTabHeaderText" MinWidth="200" TextAlignment="Center" TextWrapping="NoWrap" />
+        </TabItem.Header>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Border Classes="card" Margin="0,16,0,0">
+            <Grid x:Name="BenchmarkContentGrid" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" RowSpacing="14">
+              <TextBlock x:Name="BenchmarkTitleText" Text="启动时间对比" FontWeight="SemiBold" FontSize="18" />
+              <TextBlock x:Name="BenchmarkHintText" Grid.Row="1" Text="每轮随机交错启动原文件和压缩文件；仅关闭本工具启动的进程。" Classes="section-note" />
+              <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                <TextBlock x:Name="OriginalFileLabelText" Text="原文件" VerticalAlignment="Center" Opacity="0.76" />
+                <TextBox x:Name="OriginalBenchmarkPathBox" Grid.Column="1" IsReadOnly="True" />
+                <Button x:Name="SelectOriginalBenchmarkButton" Grid.Column="2" Content="选择文件" Click="SelectOriginalBenchmark_Click" />
+              </Grid>
+              <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                <TextBlock x:Name="PackedFileLabelText" Text="压缩文件" VerticalAlignment="Center" Opacity="0.76" />
+                <TextBox x:Name="PackedBenchmarkPathBox" Grid.Column="1" IsReadOnly="True" />
+                <Button x:Name="SelectPackedBenchmarkButton" Grid.Column="2" Content="选择文件" Click="SelectPackedBenchmark_Click" />
+              </Grid>
+              <Grid Grid.Row="4" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
+                <TextBlock x:Name="RoundsLabelText" Text="每个文件轮数" VerticalAlignment="Center" Opacity="0.76" />
+                <ComboBox x:Name="RoundsBox" Grid.Column="1" Width="95">
+                  <ComboBoxItem Content="5" />
+                  <ComboBoxItem Content="10" />
+                  <ComboBoxItem Content="15" />
+                  <ComboBoxItem Content="20" />
+                </ComboBox>
+                <TextBlock x:Name="BenchmarkMethodText" Grid.Column="2" VerticalAlignment="Center" Classes="section-note" />
+                <Button x:Name="BenchmarkButton" Grid.Column="3" Content="开始测试" Padding="22,9" Click="Benchmark_Click" />
+              </Grid>
+              <TextBox x:Name="BenchmarkResultTextBox" Grid.Row="5" MinHeight="240" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#0F141C" FontFamily="Cascadia Mono, Consolas, monospace" />
+              <TextBlock x:Name="BenchmarkStatusText" Grid.Row="6" Text="准备就绪" Opacity="0.76" />
+            </Grid>
+          </Border>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+
+    <TextBlock x:Name="FooterText" Grid.Row="2" Text="misa77 仅适用于包含对应运行时解码器的定制 UPX。" Opacity="0.55" TextWrapping="Wrap" />
+  </Grid>
+</Window>

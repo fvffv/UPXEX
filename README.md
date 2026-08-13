@@ -1,4 +1,4 @@
-# UPXEx Startup Benchmark Results / UPXEx 启动速度测试结果
+# UPXEX
 
 > **English first · 中文随后**
 
